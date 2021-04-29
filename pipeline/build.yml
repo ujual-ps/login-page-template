@@ -1,0 +1,32 @@
+---
+resources:
+  - name: login-template
+    type: git
+    source:
+      uri: https://github.com/ujual-ps/login-page-template.git
+      branch: master
+
+  - name: my-timer
+    type: time
+    source:
+      interval: 2m
+
+jobs:
+  - name: start
+    public: true
+    serial: true
+    plan:
+      - get: login-template
+      - get: my-timer
+        trigger: true
+      - task: start
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: busybox}
+          inputs:
+            - name: resource-gist
+          run:
+            path: cat
+            args: [resource-gist/bumpme]
